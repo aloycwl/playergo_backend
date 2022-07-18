@@ -9,6 +9,7 @@ interface IERC20{
 contract RG is ERC721AC,OnlyAccess{
     uint public _count=1;
     uint private _release;
+    mapping(uint=>uint)private _released;
     mapping(address=>uint[])private _tokens;
     IERC20 private ipg;
     IERC20 private iusdt;
@@ -37,6 +38,10 @@ contract RG is ERC721AC,OnlyAccess{
         _release=_release==0?block.timestamp:0;
     }
     function getDrip()public view returns(uint){
+        uint amt;
+        for(uint i;i<_tokens[msg.sender].length;i++){
+            if
+        }
         return _release>0?block.timestamp-_release:0;
     }
     function drip()external{
