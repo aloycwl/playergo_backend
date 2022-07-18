@@ -9,13 +9,16 @@ interface IERC20{
 }
 contract RG is ERC721AC,OnlyAccess{
     uint public _count=1;
-    uint private _release;
+    uint public _release;
     mapping(uint=>uint)private _released;
     mapping(address=>uint[])private _tokens;
     IERC20 private irg;
     IERC20 private iusdt;
+
+    uint time;
     constructor(string memory name_,string memory sym_,address a,address b)ERC721AC(name_,sym_){
         (iusdt,irg)=(IERC20(a),IERC20(b));
+        time=block.timestamp;
     }
     function tokenURI(uint)external pure override returns(string memory){
         return"https://ipfs.io/ipfs/bafybeieuti6mhg5p6pbf7n4emjqff5l6b4qv5pm7fbhqfy2i3rialwp52y/rg.json";
@@ -40,9 +43,9 @@ contract RG is ERC721AC,OnlyAccess{
         _count-=a;
     }}
     function getDrip()public view returns(uint amt){unchecked{
-        for(uint i;i<_tokens[msg.sender].length;i++)if(_release>0){ 
+        if(_release>0)for(uint i;i<_tokens[msg.sender].length;i++){ 
             uint r=_released[_tokens[msg.sender][i]];
-            amt+=(block.timestamp-r>0?r:_release)*31709792e7;
+            amt+=((block.timestamp-(r>0?r:_release))*31709792e7);
         }
     }}
     function drip()external{unchecked{
