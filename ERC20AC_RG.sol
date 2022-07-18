@@ -1,6 +1,7 @@
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 import"https://github.com/aloycwl/ERC_AC/blob/main/ERC20AC/ERC20AC.sol";
-contract RG is ERC20AC{
+import"https://github.com/aloycwl/ERC_AC/blob/main/Util/OnlyAccess.sol";
+contract RG is ERC20AC,OnlyAccess{
     mapping(address=>address)private _fromCon;
     address private _con;
     uint public _released;
@@ -16,8 +17,7 @@ contract RG is ERC20AC{
         emit Transfer(a,b,c);
         return true;
     }}
-    function toggleRelease()external{
-        require(msg.sender==_owner);
+    function toggleRelease()external onlyAccess{
         _released=_released==0?1:0;
     }
 }
