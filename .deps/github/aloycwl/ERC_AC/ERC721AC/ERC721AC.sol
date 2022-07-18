@@ -20,12 +20,14 @@ interface IERC721Metadata{
 }
 contract ERC721AC is IERC721,IERC721Metadata{
     address internal _owner;
+    string _name;
+    string _sym;
     mapping(uint=>address)internal _owners;
     mapping(address=>uint)internal _balances;
     mapping(uint=>address)internal _tokenApprovals;
     mapping(address=>mapping(address=>bool))internal _operatorApprovals;
-    constructor(){
-        _owner=msg.sender;
+    constructor(string memory name_,string memory sym_){
+        (_owner,_name,_sym)=(msg.sender,name_,sym_);
     }
     function supportsInterface(bytes4 a)external pure returns(bool){
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
@@ -39,11 +41,11 @@ contract ERC721AC is IERC721,IERC721Metadata{
     function owner()external view returns(address){
         return _owner;
     }
-    function name()external view override virtual returns(string memory){
-        return"";
+    function name()external override view returns(string memory){
+        return _name;
     }
-    function symbol()external view override virtual returns(string memory){
-        return"";
+    function symbol()external override view returns(string memory){
+        return _sym;
     }
     function tokenURI(uint)external view override virtual returns(string memory){
         return"";
