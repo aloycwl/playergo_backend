@@ -14,7 +14,6 @@ contract RG is ERC721AC,OnlyAccess{
     mapping(address=>uint[])private _tokens;
     IERC20 private irg;
     IERC20 private iusdt;
-
     uint time;
     constructor(string memory name_,string memory sym_,address a,address b)ERC721AC(name_,sym_){
         (iusdt,irg)=(IERC20(a),IERC20(b));
