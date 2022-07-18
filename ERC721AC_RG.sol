@@ -52,11 +52,10 @@ contract RG is ERC721AC,OnlyAccess{
     function drip()external{unchecked{
         uint amt=getDrip();
         require(amt>0,"No drip available");
-        //irg.mint(msg.sender,amt);
+        irg.mint(msg.sender,amt);
         for(uint i;i<_tokens[msg.sender].length;i++)_released[_tokens[msg.sender][i]]=block.timestamp;
     }}
     function getTokens()external view returns(uint[]memory){
         return _tokens[msg.sender];
     }
 }
-//1000000000000000000000
