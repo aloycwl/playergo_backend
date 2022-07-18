@@ -37,16 +37,17 @@ contract RG is ERC721AC,OnlyAccess{
     function toggleRelease()external onlyAccess{
         _release=_release==0?block.timestamp:0;
     }
-    function getDrip()public view returns(uint){
-        uint amt;
-        for(uint i;i<_tokens[msg.sender].length;i++){
-            if
+    function getDrip()public view returns(uint amt){unchecked{
+        for(uint i;i<_tokens[msg.sender].length;i++)if(_release>0){ 
+            uint r=_released[_tokens[msg.sender][i]];
+            amt+=(block.timestamp-r>0?r:_release)*31709792e7;
         }
-        return _release>0?block.timestamp-_release:0;
-    }
-    function drip()external{
-        
-    }
+    }}
+    function drip()external{unchecked{
+        uint amt=getDrip();
+        require(amt>0);
+        for(uint i;i<_tokens[msg.sender].length;i++)_released[_tokens[msg.sender][i]]=block.timestamp;
+    }}
     function getTokens()external view returns(uint[]memory){
         return _tokens[msg.sender];
     }
