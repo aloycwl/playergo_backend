@@ -8,7 +8,7 @@ interface IERC20{
     function mint(address,uint)external;
 }
 contract RG is ERC721AC,OnlyAccess{
-    uint public _count=1;
+    uint public _count;
     uint public _release;
     mapping(uint=>uint)private _released;
     mapping(address=>uint[])private _tokens;
@@ -30,13 +30,14 @@ contract RG is ERC721AC,OnlyAccess{
         require(_count<5e3,"Token sales is over");
         require(iusdt.balanceOf(msg.sender)>=1e21,"Insufficient USDT");
         require(iusdt.allowance(msg.sender,address(this))>=1e21,"Insufficient allowance");
+        _count++;
         iusdt.transferFrom(msg.sender,address(this),1e21);
         iusdt.transferFrom(address(this),_owner,8e20);
         iusdt.transferFrom(address(this),a==address(0)?_owner:a,2e20);
         (_owners[_count]=msg.sender,_balances[msg.sender]++);
         _tokens[msg.sender].push(_count);
         emit Transfer(address(0),msg.sender,_count);
-        _count++;
+        
     }}
     function burn(uint a)external onlyAccess{unchecked{
         require(msg.sender==_owner);
@@ -51,7 +52,7 @@ contract RG is ERC721AC,OnlyAccess{
     function drip()external{unchecked{
         uint amt=getDrip();
         require(amt>0,"No drip available");
-        irg.mint(msg.sender,amt);
+        //irg.mint(msg.sender,amt);
         for(uint i;i<_tokens[msg.sender].length;i++)_released[_tokens[msg.sender][i]]=block.timestamp;
     }}
     function getTokens()external view returns(uint[]memory){
