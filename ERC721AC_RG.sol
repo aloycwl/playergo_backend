@@ -20,6 +20,9 @@ contract RG is ERC721AC,OnlyAccess{
     function tokenURI(uint)external pure override returns(string memory){
         return"https://ipfs.io/ipfs/bafybeieuti6mhg5p6pbf7n4emjqff5l6b4qv5pm7fbhqfy2i3rialwp52y/rg.json";
     }
+    function toggleRelease()external onlyAccess{
+        _release=_release==0?block.timestamp:0;
+    }
     function mint(address a)external{unchecked{
         require(_count<5e3,"Token sales is over");
         require(iusdt.balanceOf(msg.sender)>=1e21,"Insufficient USDT");
@@ -28,6 +31,7 @@ contract RG is ERC721AC,OnlyAccess{
         iusdt.transferFrom(address(this),_owner,8e20);
         iusdt.transferFrom(address(this),a==address(0)?_owner:a,2e20);
         (_owners[_count]=msg.sender,_balances[msg.sender]++);
+        _tokens[msg.sender].push(_count);
         emit Transfer(address(0),msg.sender,_count);
         _count++;
     }}
@@ -35,9 +39,6 @@ contract RG is ERC721AC,OnlyAccess{
         require(msg.sender==_owner);
         _count-=a;
     }}
-    function toggleRelease()external onlyAccess{
-        _release=_release==0?block.timestamp:0;
-    }
     function getDrip()public view returns(uint amt){unchecked{
         for(uint i;i<_tokens[msg.sender].length;i++)if(_release>0){ 
             uint r=_released[_tokens[msg.sender][i]];
@@ -54,3 +55,4 @@ contract RG is ERC721AC,OnlyAccess{
         return _tokens[msg.sender];
     }
 }
+//1000000000000000000000
