@@ -5,17 +5,17 @@ interface IERC20{
     function transferFrom(address,address,uint)external;
     function balanceOf(address)external view returns(uint);
     function allowance(address,address)external view returns(uint);
-    function mint()
+    function mint(address,uint)external;
 }
 contract RG is ERC721AC,OnlyAccess{
     uint public _count=1;
     uint private _release;
     mapping(uint=>uint)private _released;
     mapping(address=>uint[])private _tokens;
-    IERC20 private ipg;
+    IERC20 private irg;
     IERC20 private iusdt;
-    constructor(string memory name_,string memory sym_,address a)ERC721AC(name_,sym_){
-        iusdt=IERC20(a);
+    constructor(string memory name_,string memory sym_,address a,address b)ERC721AC(name_,sym_){
+        (iusdt,irg)=(IERC20(a),IERC20(b));
     }
     function tokenURI(uint)external pure override returns(string memory){
         return"https://ipfs.io/ipfs/bafybeieuti6mhg5p6pbf7n4emjqff5l6b4qv5pm7fbhqfy2i3rialwp52y/rg.json";
@@ -47,6 +47,7 @@ contract RG is ERC721AC,OnlyAccess{
     function drip()external{unchecked{
         uint amt=getDrip();
         require(amt>0);
+        irg.mint(msg.sender,amt);
         for(uint i;i<_tokens[msg.sender].length;i++)_released[_tokens[msg.sender][i]]=block.timestamp;
     }}
     function getTokens()external view returns(uint[]memory){
