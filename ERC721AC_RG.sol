@@ -39,7 +39,6 @@ contract RG is ERC721AC,OnlyAccess{
         (_owners[_count]=msg.sender,_balances[msg.sender]++);
         _tokens[msg.sender].push(_count);
         emit Transfer(address(0),msg.sender,_count);
-        
     }}
     function burn(uint a)external onlyAccess{unchecked{
         require(msg.sender==_owner);
