@@ -13,6 +13,7 @@ contract RG is ERC721AC,OnlyAccess{
     mapping(uint=>uint)private _released;
     mapping(address=>uint[])private _tokens;
     mapping(address=>address)private upline;
+    mapping(address=>uint)public downlineCounts;
     IERC20 private irg;
     IERC20 private iusdt;
     uint time;
@@ -31,12 +32,11 @@ contract RG is ERC721AC,OnlyAccess{
         require(_count+b<5e3,"Token sales is over");
         require(iusdt.balanceOf(msg.sender)>=1e21*b,"Insufficient USDT");
         require(iusdt.allowance(msg.sender,address(this))>=1e21*b,"Insufficient allowance");
-        _count+=b;
         if(upline[msg.sender]==address(0))upline[msg.sender]=a==address(0)?_owner:a;
+        (_count+=b,_balances[msg.sender]+=b,downlineCounts[upline[msg.sender]]+=b);
         iusdt.transferFrom(msg.sender,address(this),1e21*b);
         iusdt.transferFrom(address(this),_owner,8e20*b);
         iusdt.transferFrom(address(this),upline[msg.sender],2e20*b);
-        _balances[msg.sender]+=b;
         for(uint i=_count;i<_count+1;i++){
             _owners[i]=msg.sender;
             _tokens[msg.sender].push(i);
