@@ -26,18 +26,22 @@ contract RG is ERC721AC,OnlyAccess{
     function toggleRelease()external onlyAccess{
         _release=_release==0?block.timestamp:0;
     }
-    function mint(address a)external{unchecked{
+    function mint(address a,uint b)external{unchecked{
+        if(b<1)b=1;
         require(_count<5e3,"Token sales is over");
         require(iusdt.balanceOf(msg.sender)>=1e21,"Insufficient USDT");
         require(iusdt.allowance(msg.sender,address(this))>=1e21,"Insufficient allowance");
-        _count++;
+        _count+=b;
         if(upline[msg.sender]==address(0))upline[msg.sender]=a==address(0)?_owner:a;
-        iusdt.transferFrom(msg.sender,address(this),1e21);
-        iusdt.transferFrom(address(this),_owner,8e20);
-        iusdt.transferFrom(address(this),upline[msg.sender],2e20);
-        (_owners[_count]=msg.sender,_balances[msg.sender]++);
-        _tokens[msg.sender].push(_count);
-        emit Transfer(address(0),msg.sender,_count);
+        iusdt.transferFrom(msg.sender,address(this),1e21*b);
+        iusdt.transferFrom(address(this),_owner,8e20*b);
+        iusdt.transferFrom(address(this),upline[msg.sender],2e20*b);
+        _balances[msg.sender]+=b;
+        for(uint i=_count;i<_count+1;i++){
+            _owners[i]=msg.sender;
+            _tokens[msg.sender].push(i);
+            emit Transfer(address(0),msg.sender,_count);
+        }
     }}
     function burn(uint a)external onlyAccess{unchecked{
         require(msg.sender==_owner);
