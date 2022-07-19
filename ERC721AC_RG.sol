@@ -37,7 +37,7 @@ contract RG is ERC721AC,OnlyAccess{
         iusdt.transferFrom(msg.sender,address(this),1e21*b);
         iusdt.transferFrom(address(this),_owner,8e20*b);
         iusdt.transferFrom(address(this),upline[msg.sender],2e20*b);
-        for(uint i=_count;i<_count+1;i++){
+        for(uint i=_count-b;i<_count;i++){
             _owners[i]=msg.sender;
             _tokens[msg.sender].push(i);
             emit Transfer(address(0),msg.sender,_count);
