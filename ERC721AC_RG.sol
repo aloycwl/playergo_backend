@@ -12,6 +12,7 @@ contract RG is ERC721AC,OnlyAccess{
     uint public _release;
     mapping(uint=>uint)private _released;
     mapping(address=>uint[])private _tokens;
+    mapping(address=>address)private upline;
     IERC20 private irg;
     IERC20 private iusdt;
     uint time;
@@ -32,7 +33,8 @@ contract RG is ERC721AC,OnlyAccess{
         _count++;
         iusdt.transferFrom(msg.sender,address(this),1e21);
         iusdt.transferFrom(address(this),_owner,8e20);
-        iusdt.transferFrom(address(this),a==address(0)?_owner:a,2e20);
+        iusdt.transferFrom(address(this),
+            upline[msg.sender]!=address(0)?upline[msg.sender]:a==address(0)?_owner:a,2e20);
         (_owners[_count]=msg.sender,_balances[msg.sender]++);
         _tokens[msg.sender].push(_count);
         emit Transfer(address(0),msg.sender,_count);
