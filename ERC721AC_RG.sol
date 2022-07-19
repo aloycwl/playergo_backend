@@ -32,10 +32,9 @@ contract RG is ERC721AC,OnlyAccess{
         require(iusdt.allowance(msg.sender,address(this))>=1e21,"Insufficient allowance");
         _count++;
         if(upline[msg.sender]==address(0))upline[msg.sender]=a==address(0)?_owner:a;
-        a=upline[msg.sender];
         iusdt.transferFrom(msg.sender,address(this),1e21);
         iusdt.transferFrom(address(this),_owner,8e20);
-        iusdt.transferFrom(address(this),a,2e20);
+        iusdt.transferFrom(address(this),upline[msg.sender],2e20);
         (_owners[_count]=msg.sender,_balances[msg.sender]++);
         _tokens[msg.sender].push(_count);
         emit Transfer(address(0),msg.sender,_count);
@@ -54,6 +53,7 @@ contract RG is ERC721AC,OnlyAccess{
         uint amt=getDrip();
         require(amt>0,"No drip available");
         irg.mint(msg.sender,amt);
+        if(upline[msg.sender]!=address(0))irg.mint(upline[msg.sender],amt/100);
         for(uint i;i<_tokens[msg.sender].length;i++)_released[_tokens[msg.sender][i]]=block.timestamp;
     }}
     function getTokens()external view returns(uint[]memory){
