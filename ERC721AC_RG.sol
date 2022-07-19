@@ -28,9 +28,9 @@ contract RG is ERC721AC,OnlyAccess{
     }
     function mint(address a,uint b)external{unchecked{
         if(b<1)b=1;
-        require(_count<5e3,"Token sales is over");
-        require(iusdt.balanceOf(msg.sender)>=1e21,"Insufficient USDT");
-        require(iusdt.allowance(msg.sender,address(this))>=1e21,"Insufficient allowance");
+        require(_count+b<5e3,"Token sales is over");
+        require(iusdt.balanceOf(msg.sender)>=1e21*b,"Insufficient USDT");
+        require(iusdt.allowance(msg.sender,address(this))>=1e21*b,"Insufficient allowance");
         _count+=b;
         if(upline[msg.sender]==address(0))upline[msg.sender]=a==address(0)?_owner:a;
         iusdt.transferFrom(msg.sender,address(this),1e21*b);
