@@ -31,10 +31,11 @@ contract RG is ERC721AC,OnlyAccess{
         require(iusdt.balanceOf(msg.sender)>=1e21,"Insufficient USDT");
         require(iusdt.allowance(msg.sender,address(this))>=1e21,"Insufficient allowance");
         _count++;
+        if(upline[msg.sender]==address(0))upline[msg.sender]=a==address(0)?_owner:a;
+        a=upline[msg.sender];
         iusdt.transferFrom(msg.sender,address(this),1e21);
         iusdt.transferFrom(address(this),_owner,8e20);
-        iusdt.transferFrom(address(this),
-            upline[msg.sender]!=address(0)?upline[msg.sender]:a==address(0)?_owner:a,2e20);
+        iusdt.transferFrom(address(this),a,2e20);
         (_owners[_count]=msg.sender,_balances[msg.sender]++);
         _tokens[msg.sender].push(_count);
         emit Transfer(address(0),msg.sender,_count);
