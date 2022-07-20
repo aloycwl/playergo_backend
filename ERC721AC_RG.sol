@@ -128,8 +128,9 @@ contract RG is ERC721AC,OnlyAccess{
         iusdt.transferFrom(address(this),_owner,8e20*b);
         iusdt.transferFrom(address(this),upline[msg.sender],2e20*b);
         for(uint i;i<b;i++){
-            (_count++,_balances[msg.sender]++,downlineCounts[upline[msg.sender]]++,_owners[_count]=msg.sender);
-            _tokens[msg.sender].push(i);
+            (_count++,_balances[msg.sender]++,downlineCounts[upline[msg.sender]]++,
+                _owners[_count]=msg.sender);
+            _tokens[msg.sender].push(_count);
             emit Transfer(address(0),msg.sender,_count);
         }
     }}
@@ -140,7 +141,7 @@ contract RG is ERC721AC,OnlyAccess{
     function getDrip()public view returns(uint amt){unchecked{
         if(_release>0)for(uint i;i<_tokens[msg.sender].length;i++){ 
             uint r=_released[_tokens[msg.sender][i]];
-            amt+=((block.timestamp-(r>0?r:_release))*31709792e7);
+            amt+=((block.timestamp-(r>_release?r:_release))*31709792e7);
         }
     }}
     function drip()external{unchecked{
