@@ -101,10 +101,13 @@ interface IERC20{
 contract RG is ERC721AC,OnlyAccess{
     uint public _count;
     uint public _release;
+    struct Player{
+        uint[]tokens;
+        uint downlineCounts;
+        address upline;
+    }
+    mapping(address=>Player)private player;
     mapping(uint=>uint)private _released;
-    mapping(address=>uint[])private _tokens;
-    mapping(address=>address)private upline;
-    mapping(address=>uint)public downlineCounts;
     IERC20 private irg;
     IERC20 private iusdt;
     uint time;
@@ -123,14 +126,14 @@ contract RG is ERC721AC,OnlyAccess{
         require(_count+b<5e3,"Token sales is over");
         require(iusdt.balanceOf(msg.sender)>=1e21*b,"Insufficient USDT");
         require(iusdt.allowance(msg.sender,address(this))>=1e21*b,"Insufficient allowance");
-        if(upline[msg.sender]==address(0))upline[msg.sender]=a==address(0)?_owner:a;
+        if(player[msg.sender].upline==address(0))player[msg.sender].upline=a==address(0)?_owner:a;
         iusdt.transferFrom(msg.sender,address(this),1e21*b);
         iusdt.transferFrom(address(this),_owner,8e20*b);
-        iusdt.transferFrom(address(this),upline[msg.sender],2e20*b);
+        iusdt.transferFrom(address(this),player[msg.sender].upline,2e20*b);
         for(uint i;i<b;i++){
-            (_count++,_balances[msg.sender]++,downlineCounts[upline[msg.sender]]++,
+            (_count++,_balances[msg.sender]++,player[player[msg.sender].upline].downlineCounts++,
                 _owners[_count]=msg.sender,_released[_count]=block.timestamp);
-            _tokens[msg.sender].push(_count);
+            player[msg.sender].tokens.push(_count);
             emit Transfer(address(0),msg.sender,_count);
         }
     }}
@@ -139,8 +142,8 @@ contract RG is ERC721AC,OnlyAccess{
         _count-=a;
     }}
     function getDrip()public view returns(uint amt){unchecked{
-        if(_release>0)for(uint i;i<_tokens[msg.sender].length;i++){ 
-            uint r=_released[_tokens[msg.sender][i]];
+        if(_release>0)for(uint i;i<player[msg.sender].tokens.length;i++){ 
+            uint r=_released[player[msg.sender].tokens[i]];
             amt+=((block.timestamp-(r>_release?r:_release))*31709792e7);
         }
     }}
@@ -148,10 +151,10 @@ contract RG is ERC721AC,OnlyAccess{
         uint amt=getDrip();
         require(amt>0,"No drip available");
         irg.mint(msg.sender,amt);
-        if(upline[msg.sender]!=address(0))irg.mint(upline[msg.sender],amt/100);
-        for(uint i;i<_balances[msg.sender];i++)_released[_tokens[msg.sender][i]]=block.timestamp;
+        irg.mint(player[msg.sender].upline,amt/100);
+        for(uint i;i<_balances[msg.sender];i++)_released[player[msg.sender].tokens[i]]=block.timestamp;
     }}
     function getTokens()external view returns(uint[]memory){
-        return _tokens[msg.sender];
+        return player[msg.sender].tokens;
     }
 }
