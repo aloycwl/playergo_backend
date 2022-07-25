@@ -101,6 +101,7 @@ interface IERC20{
 contract RG is ERC721AC,OnlyAccess{
     uint public _count;
     uint public _release;
+    string private _tokenURI="https://ipfs.io/ipfs/bafybeieuti6mhg5p6pbf7n4emjqff5l6b4qv5pm7fbhqfy2i3rialwp52y/rg.json";
     struct Player{
         uint[]tokens;
         uint downlineCounts;
@@ -115,8 +116,11 @@ contract RG is ERC721AC,OnlyAccess{
         (iusdt,irg)=(IERC20(a),IERC20(b));
         time=block.timestamp;
     }
-    function tokenURI(uint)external pure override returns(string memory){
-        return"https://ipfs.io/ipfs/bafybeieuti6mhg5p6pbf7n4emjqff5l6b4qv5pm7fbhqfy2i3rialwp52y/rg.json";
+    function tokenURI(uint)external view override returns(string memory){
+        return _tokenURI;
+    }
+    function setTokenURI(string memory a)external{
+        _tokenURI=a;
     }
     function toggleRelease()external onlyAccess{
         _release=_release==0?block.timestamp:0;
