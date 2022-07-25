@@ -120,6 +120,7 @@ contract RG is ERC721AC,OnlyAccess{
         return _tokenURI;
     }
     function setTokenURI(string memory a)external{
+        require(msg.sender==_owner);
         _tokenURI=a;
     }
     function toggleRelease()external onlyAccess{
