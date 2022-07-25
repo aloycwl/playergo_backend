@@ -61,7 +61,7 @@ contract OnlyAccess {
         else _access[a]=1;
     }
 }
-contract RG is ERC20AC,OnlyAccess{
+contract RGT is ERC20AC,OnlyAccess{
     constructor(string memory name_,string memory sym_)ERC20AC(name_,sym_){}
     function transferFrom(address a,address b,uint c)public override returns(bool){unchecked{
         require(_balances[a]>=c);
